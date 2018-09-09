@@ -80,7 +80,7 @@ proc createArchive(p, to: string): bool =
       cmd = strJoin(app, args, fname, p)
     result = execCmdTB(cmd, "archive")
 
-proc createArchiveIfNeeded(p, to: string): bool =
+proc createArchiveIfNeeded(p, to: string) =
   ## checks whether we want to create an archive of
   ## the given path and performs it if needed
   ## determined by age of last backup, if any.
@@ -139,11 +139,6 @@ proc daemon() =
   ## contains the event loop
 
   while true:
-    info &"... daemon will sleep for {sleepDuration}"
-    daemonSleeping = true
-    sleep(sleepDuration.seconds.int * 1000)
-    daemonSleeping = false
-    info &"... daemon woke up"
     # first get paths to be backed up / archived
     # allows to add diretories while daemon is running
     let files = parsePathList()
@@ -158,7 +153,14 @@ proc daemon() =
 
     # now that backup is done, create archive if needed
     for f in files:
-      success = f.createArchiveIfNeeded(to)
+      f.createArchiveIfNeeded(to)
+
+    info &"... daemon will sleep for {sleepDuration}"
+    daemonSleeping = true
+    sleep(sleepDuration.seconds.int * 1000)
+    daemonSleeping = false
+    info &"... daemon woke up"
+
 
 
 when isMainModule:
