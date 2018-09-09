@@ -9,9 +9,12 @@
  in the source code. By default it checks locations every hour and
  creates archives every 7 days.
 
+ The =pathList.txt= file is read again for each iteration, which means
+ directories can be added while the program is running.
+
 ** Used files / dirs
 *** Logging
-By default the log is placed in ="./logs/trivialBackup.log", make sure
+By default the log is placed in =./logs/trivialBackup.log=, make sure
 the =logs= directory exists.
 *** Paths to backup
 The paths which should be backed up, are given as a simple list of
