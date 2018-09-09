@@ -8,6 +8,7 @@ const pathList = "pathList.txt"
 const backupPath = "backupToPath.txt"
 let archiveFreq = initDuration(days = 7)      # frequency of archives in days
 let sleepDuration = initDuration(hours = 1)
+const maxTarRetries = 5
 
 var L = newConsoleLogger()
 var fl = newFileLogger(logPath, fmtStr = verboseFmtStr)
@@ -70,15 +71,25 @@ proc createArchive(p, to: string): bool =
   let pathName = p.splitPath[1]
   let archiveName = to / &"{pathName}_{getTime().toUnix}"
   info &"Creating archive {archiveName}"
-  when defined(windows):
-    raise newException(Exception, "Archive creation not yet supported on Windows.")
-  else:
-    let
-      app = "tar"
-      args = "-czf"
-      fname = archiveName & ".tar.gz"
-      cmd = strJoin(app, args, fname, p)
-    result = execCmdTB(cmd, "archive")
+
+  result = false
+  var retryCount = 0
+  while not result and retryCount < maxTarRetries:
+    when defined(windows):
+      raise newException(Exception, "Archive creation not yet supported on Windows.")
+    else:
+      let
+        app = "tar"
+        args = "-czf"
+        fname = archiveName & ".tar.gz"
+        cmd = strJoin(app, args, fname, p)
+      result = execCmdTB(cmd, "archive")
+      if not result:
+        # tar unsuccessful, remove tar archive and try again
+        info "Creating tar archive {fname} unsuccessful. Removing file " &
+          "and trying again... {retryCount} / {maxTarRetries}"
+        removeFile(fname)
+        inc retryCount
 
 proc createArchiveIfNeeded(p, to: string) =
   ## checks whether we want to create an archive of
