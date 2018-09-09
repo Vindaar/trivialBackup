@@ -1,0 +1,28 @@
+* trivialBackup - a trivially simple backup tool
+ =trivialBackup= is a very simple backup tool, which provides:
+ - creating backups of a list of directories using =rsync= on linux
+   and =robocopy= on Windows (=robocopy= support not yet implemented).
+ - create archives of the directories with a given frequency
+   (currently set in source code, =tar.gz= on unix, =zip= on Windows)
+ It writes a log of its activities and runs as a daemon in the
+ background. The time it sleeps between activity is currently also set
+ in the source code. By default it checks locations every hour and
+ creates archives every 7 days.
+
+** Used files / dirs
+*** Logging
+By default the log is placed in ="./logs/trivialBackup.log", make sure
+the =logs= directory exists.
+*** Paths to backup
+The paths which should be backed up, are given as a simple list of
+files =pathList.txt=
+*** Backup path
+The path where the backups and archives should be stored, is given as
+a single directory in =backupToPath.txt=.
+
+** Settings
+*** Sleep duration
+The sleep duration can be changed with the variable =sleepDuration=.
+*** Archive frequency
+The frequency of backups can be set with the variable =archiveFreq=.
+  
