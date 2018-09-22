@@ -11,10 +11,9 @@ let sleepDuration = initDuration(hours = 1)
 const maxTarRetries = 5
 
 var L = newConsoleLogger()
-var fl = newFileLogger(logPath, fmtStr = verboseFmtStr)
+var fL = newFileLogger(logPath, fmtStr = verboseFmtStr)
 addHandler(L)
 addHandler(fL)
-
 
 var daemonSleeping = false
 
@@ -166,6 +165,8 @@ proc daemon() =
     for f in files:
       f.createArchiveIfNeeded(to)
 
+    # before we sleep, flush to disk
+    fL.file.flushFile()
     info &"... daemon will sleep for {sleepDuration}"
     daemonSleeping = true
     sleep(sleepDuration.seconds.int * 1000)
